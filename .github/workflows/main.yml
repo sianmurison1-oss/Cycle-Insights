@@ -20,7 +20,7 @@ jobs:
           npm init -y
           npm install @capacitor/core @capacitor/cli @capacitor/android
           mkdir www
-          echo '<script>window.location.href="https://lovable.app";</script>' > www/index.html
+          echo '<script>window.location.href="https://cycle-self-insights.lovable.app/";</script>' > www/index.html
 
       - name: Configure App Container
         run: |
