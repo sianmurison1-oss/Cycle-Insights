@@ -1,0 +1,64 @@
+package com.example.cycleself
+
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+
+import android.webkit.GeolocationPermissions
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var webView: WebView
+
+    @SuppressLint("SetJavaScriptEnabled")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        webView = findViewById(R.id.webView)
+
+        webView.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            setSupportZoom(true)
+            builtInZoomControls = true
+            displayZoomControls = false
+            allowFileAccess = false
+            // mixedContentMode not changed (defaults to MIXED_CONTENT_NEVER_ALLOW)
+            loadWithOverviewMode = true
+            useWideViewPort = true
+            databaseEnabled = true
+            mediaPlaybackRequiresUserGesture = false
+        }
+
+        webView.webChromeClient = WebChromeClient()
+
+        webView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(
+                view: WebView,
+                request: WebResourceRequest
+            ): Boolean {
+                val host = request.url.host ?: return false
+                val baseHost = Uri.parse("https://cycle-self-insights.lovable.app/").host ?: return false
+                return if (host == baseHost || host.endsWith(".${baseHost}")) {
+                    false // load in WebView
+                } else {
+                    startActivity(Intent(Intent.ACTION_VIEW, request.url))
+                    true  // open externally
+                }
+            }
+        }
+
+        webView.loadUrl("https://cycle-self-insights.lovable.app/")
+    }
+
+    override fun onBackPressed() {
+        if (webView.canGoBack()) webView.goBack()
+        else super.onBackPressed()
+    }
+}
